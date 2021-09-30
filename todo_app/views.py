@@ -115,8 +115,7 @@ class TodoListView(BaseView):
             Get all tasks with available filters and search parameters
         """
         try:
-            queryset = self.get_all_objects().filter(is_active=True)
-            user_ids = list(map(int, request.GET.getlist('user_id')))
+            queryset = self.get_all_objects().filter(user=request.user, is_active=True)
             sort_by = request.GET.get('sort_by', 'asc')
             page = request.GET.get('page', 1)
             search = request.GET.get('search', '')
@@ -131,17 +130,12 @@ class TodoListView(BaseView):
             if from_start_date and to_start_date:  # Filter tasks based on start date
                 from_start_date = DateTimeUtils.convert_date_string_to_date(from_start_date)
                 to_start_date = DateTimeUtils.convert_date_string_to_date(to_start_date)
-                to_start_date = DateTimeUtils.get_related_datetime(to_start_date, days=1)
                 queryset = queryset.filter(start_date__range=[from_start_date, to_start_date])
 
             if from_end_date and to_end_date:  # Filter tasks based on end date
                 from_end_date = DateTimeUtils.convert_date_string_to_date(from_end_date)
                 to_end_date = DateTimeUtils.convert_date_string_to_date(to_end_date)
-                to_end_date = DateTimeUtils.get_related_datetime(to_end_date, days=1)
                 queryset = queryset.filter(end_date__range=[from_end_date, to_end_date])
-
-            if user_ids:  # Filter tasks based on user
-                queryset = queryset.filter(user__id__in=user_ids)
 
             # Sorting tasks in ascending or descending order
             if sort_by == 'asc':
@@ -172,6 +166,8 @@ class TodoListView(BaseView):
             data['user'] = request.user.id
             data['start_date'] = DateTimeUtils.convert_date_string_to_date(data['start_date'])
             data['end_date'] = DateTimeUtils.convert_date_string_to_date(data['end_date'])
+            if not DateTimeUtils.get_date_difference(data['start_date'], data['end_date']):
+                return CommonUtils.dispatch_failure(Error.END_DATE_GREATER_THAN_START_DATE)
             serializer = self.add_serializer(data=data)
             if serializer.is_valid():
                 serializer.save()

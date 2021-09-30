@@ -13,8 +13,8 @@ tags:
     description: "Contains ToDo module APIs"
 
 schemes:
-  - "http"
   - "https"
+  - "http"
 
 securityDefinitions:
   Bearer:
@@ -149,14 +149,6 @@ paths:
           description: "Sort by ascending or descending order"
           required: false
           enum: [ "asc", "desc" ]
-        - name: "user_id"
-          in: "query"
-          description: "User ID"
-          required: false
-          type: "array"
-          items:
-            type: "integer"
-          collectionFormat: multi
         - in: "query"
           name: "page"
           type: "integer"
