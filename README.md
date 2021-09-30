@@ -1,7 +1,25 @@
-# ToDo list application 
-ToDo List application APIs
+# ToDo list application
 
-Todo list application with simple CRUD and user management consists of Signup and Login APIs, and it is deployed in Heroku
+# Description
+   - Todo list application with simple CRUD and user management.
+   - Developed using Django Rest Framework.
+   - Hosted in Heroku.
+
+# Database Schema
+      User:
+         first_name
+         last_name
+         username
+         password
+
+      ToDo:
+         user -> FK reference of table User
+         task_name
+         task_description
+         status -> COMPLETED, IN_PROGRESS, NOT_STARTED, HOLD
+         priority -> LOW, MEDIUM, HIGH, SEVERE
+         start_date
+         end_date
 
 # Setup Instructions
 __Steps__
