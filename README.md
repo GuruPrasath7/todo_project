@@ -77,5 +77,6 @@ __Steps__
 
 7. DJANGO SUPER ADMIN CREDENTIALS:
    
+         ADMIN PANEL LINK: https://todo-project-django.herokuapp.com/admin/
          USERNAME: superadmin@gmail.com
          PASSWORD: password
