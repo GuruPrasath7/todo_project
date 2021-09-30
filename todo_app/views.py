@@ -138,7 +138,7 @@ class TodoListView(BaseView):
                 from_end_date = DateTimeUtils.convert_date_string_to_date(from_end_date)
                 to_end_date = DateTimeUtils.convert_date_string_to_date(to_end_date)
                 to_end_date = DateTimeUtils.get_related_datetime(to_end_date, days=1)
-                queryset = queryset.filter(start_date__range=[from_end_date, to_end_date])
+                queryset = queryset.filter(end_date__range=[from_end_date, to_end_date])
 
             if user_ids:  # Filter tasks based on user
                 queryset = queryset.filter(user__id__in=user_ids)
