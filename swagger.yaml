@@ -1,0 +1,544 @@
+swagger: "2.0"
+info:
+  description: "Swagger API documentation for Todo list application"
+  version: "1.0.0"
+  title: "ToDo Project API Docs"
+
+host: ""
+
+tags:
+  - name: "User"
+    description: "Contains User related APIs"
+  - name: "ToDo"
+    description: "Contains ToDo module APIs"
+
+schemes:
+  - "http"
+  - "https"
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+
+paths:
+  /api/signup/:
+    post:
+      tags:
+        - "User"
+      summary: "SignUp API"
+      description: "SignUp API"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Signup Request"
+          required: true
+          schema:
+            $ref: "#/definitions/Signup"
+      responses:
+        Internal Server Error:
+          description: 'Internal Server Error'
+          "examples": {
+            "application/json": { "status": "failed","code": 1001,"message": "The server could not process the request." }
+          }
+        Validation Error:
+          description: 'Validation Error'
+          "examples": {
+            "application/json": {
+              "status": "failed",
+              "code": 1003,
+              "message": "Validation Failed",
+              "errors": {
+                "username": [
+                    "This field is required."
+                ]
+              }
+            }
+          }
+        Success:
+          description: 'Success'
+          "examples": {
+            "application/json": {
+              "status": "success",
+              "result": [
+                  "SUCCESS"
+              ]
+            }
+          }
+  /api/login/:
+    post:
+      tags:
+        - "User"
+      summary: "Login API"
+      description: "Login API"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Login Request"
+          required: true
+          schema:
+            $ref: "#/definitions/Login"
+      responses:
+        Internal Server Error:
+          description: 'Internal Server Error'
+          "examples": {
+            "application/json": { "status": "failed","code": 1001,"message": "The server could not process the request." }
+          }
+        User Unauthorized Access:
+          description: " User Unauthorized Access"
+          "examples": {
+            "application/json": {
+              "status": "failed",
+              "code": 1000,
+              "message": "User unauthorized access.",
+              "errors": {
+                "non_field_errors": [
+                    "Unable to login with required credentials"
+                ]
+              }
+            }
+          }
+        Validation Error:
+          description: 'Validation Error'
+          "examples": {
+            "application/json": {
+              "status": "failed",
+              "code": 1003,
+              "message": "Validation Failed",
+              "errors": {
+                "username": [
+                    "This field is required."
+                ]
+              }
+            }
+          }
+        Success:
+          description: 'Success'
+          "examples": {
+            "application/json": {
+              "status": "success",
+              "result": { "username": "Elon123", "token": "dada12n8911sad120" }
+            }
+          }
+
+  /api/todo/:
+    get:
+      tags:
+        - "ToDo"
+      summary: "Get list of ToDos"
+      description: "Get list of ToDos"
+      security:
+        - Bearer: [ ]
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "query"
+          name: "sort_by"
+          type: "string"
+          description: "Sort by ascending or descending order"
+          required: false
+          enum: [ "asc", "desc" ]
+        - name: "user_id[]"
+          in: "query"
+          description: "User ID"
+          required: false
+          type: "array"
+          items:
+            type: "integer"
+          collectionFormat: multi
+        - in: "query"
+          name: "page"
+          type: "integer"
+          description: "Page number for pagination"
+          required: false
+        - in: "query"
+          name: "search"
+          type: "string"
+          description: "Search by task name or task description"
+          required: false
+        - in: "query"
+          name: "status"
+          type: "string"
+          description: "Status of the task"
+          required: false
+          enum: [ "NOT_STARTED", "IN_PROGRESS", "HOLD", "COMPLETED" ]
+        - in: "query"
+          name: "priority"
+          type: "string"
+          description: "Priority of the task"
+          required: false
+          enum: [ "LOW", "MEDIUM", "HIGH", "SEVERE" ]
+        - in: "query"
+          name: "from_start_date"
+          type: "string"
+          description: "From range for start_date field (format: dd-mm-yyyy). Need to_start_date query param to make the filter work."
+          required: false
+        - in: "query"
+          name: "to_start_date"
+          type: "string"
+          description: "To range for start_date field (format: dd-mm-yyyy). Need from_start_date query param to make the filter work."
+          required: false
+        - in: "query"
+          name: "from_end_date"
+          type: "string"
+          description: "From range for end_date field (format: dd-mm-yyyy). Need to_end_date query param to make the filter work."
+          required: false
+        - in: "query"
+          name: "to_end_date"
+          type: "string"
+          description: "To range for end_date field (format: dd-mm-yyyy). Need from_end_date query param to make the filter work."
+          required: false
+      responses:
+        Internal Server Error:
+          description: 'Internal Server Error'
+          "examples": {
+            "application/json": { "status": "failed","code": 1001,"message": "The server could not process the request." }
+          }
+        Unauthorized:
+          description: " User Unauthorized Access"
+          "examples": {
+            "application/json": {
+              "message": "User unauthorized access.",
+              "status": "failed",
+              "code": "1000"
+            }
+          }
+        Success:
+          description: 'Success'
+          "examples": {
+            "application/json": {
+              "status": "success",
+              "result": {
+                "status": "success",
+                "result": {
+                  "total_pages": 1,
+                  "page": 1,
+                  "per_page": 10,
+                  "total_entries": 2,
+                  "data": [
+                    {
+                      "id": 1,
+                      "user": {
+                        "first_name": "guru",
+                        "last_name": "prasath",
+                        "username": "guruprasath"
+                      },
+                      "task_name": "Brush",
+                      "task_description": "Brush in the morning",
+                      "start_date": "2021-09-30T00:00:00Z",
+                      "end_date": "2021-09-30T00:00:00Z",
+                      "status": "IN_PROGRESS",
+                      "priority": "HIGH"
+                    },
+                    {
+                      "id": 2,
+                      "user": {
+                        "first_name": "guru",
+                        "last_name": "prasath",
+                        "username": "guruprasath"
+                      },
+                      "task_name": "Brush",
+                      "task_description": "Grocery",
+                      "start_date": "2021-01-01T00:00:00Z",
+                      "end_date": "2021-12-02T00:00:00Z",
+                      "status": "NOT_STARTED",
+                      "priority": "LOW"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+    post:
+      tags:
+        - "ToDo"
+      summary: "Add a ToDo"
+      description: "Add a ToDo"
+      security:
+        - Bearer: [ ]
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "ToDo Details"
+          required: true
+          schema:
+            $ref: "#/definitions/AddToDo"
+      responses:
+        Internal Server Error:
+          description: 'Internal Server Error'
+          "examples": {
+            "application/json": { "status": "failed","code": 1001,"message": "The server could not process the request." }
+          }
+        Unauthorized:
+          description: " User Unauthorized Access"
+          "examples": {
+            "application/json": {
+              "message": "User unauthorized access.",
+              "status": "failed",
+              "code": "1000"
+            }
+          }
+        Validation Error:
+          description: "Validation Failed"
+          "examples": {
+            "application/json": {
+              "status": "failed",
+              "code": 1003,
+              "message": "Validation Failed",
+              "errors": {
+                "priority": [
+                    "This field is required."
+                ]
+              }
+            }
+          }
+        Success:
+          description: 'Success'
+          "examples": {
+            "application/json": {
+              "status": "success",
+              "result": [
+                  "ADDED SUCCESSFULLY"
+              ]
+            }
+          }
+    delete:
+      tags:
+        - "ToDo"
+      summary: "Add a ToDo"
+      description: "Add a ToDo"
+      security:
+        - Bearer: [ ]
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "task_id[]"
+          in: "query"
+          description: "Task ID"
+          required: true
+          type: "array"
+          items:
+            type: "integer"
+          collectionFormat: multi
+      responses:
+        Internal Server Error:
+          description: 'Internal Server Error'
+          "examples": {
+            "application/json": { "status": "failed","code": 1001,"message": "The server could not process the request." }
+          }
+        Unauthorized:
+          description: " User Unauthorized Access"
+          "examples": {
+            "application/json": {
+              "message": "User unauthorized access.",
+              "status": "failed",
+              "code": "1000"
+            }
+          }
+        Success:
+          description: 'Success'
+          "examples": {
+            "application/json": {
+              "status": "success",
+              "result": [
+                  "DELETED SUCCESSFULLY"
+              ]
+            }
+          }
+
+  /api/todo/{todo_id}/:
+    get:
+      tags:
+        - ToDo
+      summary: "Get details of a particular ToDo"
+      description: "Get details of a particular ToDo"
+      security:
+        - Bearer: [ ]
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "todo_id"
+          description: "ToDo ID"
+          required: true
+          type: "integer"
+      responses:
+        Internal Server Error:
+          description: 'Internal Server Error'
+          "examples": {
+            "application/json": { "status": "failed","code": 1001,"message": "The server could not process the request." }
+          }
+        Unauthorized:
+          description: " User Unauthorized Access"
+          "examples": {
+            "application/json": {
+              "message": "User unauthorized access.",
+              "status": "failed",
+              "code": "1000"
+            }
+          }
+        Success:
+          description: 'Success'
+          "examples": {
+            "application/json": {
+              "status": "success",
+              "result": {
+                "status": "success",
+                "result": {
+                  "id": 6,
+                  "user": {
+                    "first_name": "",
+                    "last_name": "",
+                    "username": "elonmusk"
+                  },
+                  "task_name": "D3",
+                  "task_description": "DUMMY3",
+                  "start_date": "2021-01-01T00:00:00Z",
+                  "end_date": "2021-12-02T00:00:00Z",
+                  "status": "NOT_STARTED",
+                  "priority": "SEVERE",
+                  "is_active": true
+                }
+              }
+            }
+          }
+    put:
+      tags:
+        - ToDo
+      summary: "Get details of a particular ToDo"
+      description: "Get details of a particular ToDo"
+      security:
+        - Bearer: [ ]
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "todo_id"
+          description: "ToDo ID"
+          required: true
+          type: "integer"
+        - in: "body"
+          name: "body"
+          description: "ToDo Details"
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateToDo"
+      responses:
+        Internal Server Error:
+          description: 'Internal Server Error'
+          "examples": {
+            "application/json": { "status": "failed","code": 1001,"message": "The server could not process the request." }
+          }
+        Unauthorized:
+          description: " User Unauthorized Access"
+          "examples": {
+            "application/json": {
+              "message": "User unauthorized access.",
+              "status": "failed",
+              "code": "1000"
+            }
+          }
+        Success:
+          description: 'Success'
+          "examples": {
+            "application/json": {
+              "status": "success",
+              "result": {
+                "status": "success",
+                "result": {
+                  "id": 6,
+                  "user": {
+                    "first_name": "",
+                    "last_name": "",
+                    "username": "elonmusk"
+                  },
+                  "task_name": "D3",
+                  "task_description": "DUMMY3",
+                  "start_date": "2021-01-01T00:00:00Z",
+                  "end_date": "2021-12-02T00:00:00Z",
+                  "status": "NOT_STARTED",
+                  "priority": "SEVERE",
+                  "is_active": true
+                }
+              }
+            }
+          }
+
+definitions:
+  Signup:
+    type: "object"
+    properties:
+      first_name:
+        type: "string"
+      last_name:
+        type: "string"
+      username:
+        type: "string"
+      password:
+        type: "string"
+  Login:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      password:
+        type: "string"
+  AddToDo:
+    type: "object"
+    properties:
+      task_name:
+        type: "string"
+      task_description:
+        type: "string"
+      status:
+        type: "string"
+        description: "Choices are NOT_STARTED, IN_PROGRESS, HOLD, COMPLETED"
+      priority:
+        type: "string"
+        description: "Choices are LOW, MEDIUM, HIGH, SEVERE"
+      start_date:
+        type: "string"
+        format: "dd-mm-yyyy"
+      end_date:
+        type: "string"
+        format: "dd-mm-yyyy"
+  UpdateToDo:
+    type: "object"
+    properties:
+      task_name:
+        type: "string"
+      task_description:
+        type: "string"
+      status:
+        type: "string"
+        description: "Choices are NOT_STARTED, IN_PROGRESS, HOLD, COMPLETED"
+      priority:
+        type: "string"
+        description: "Choices are LOW, MEDIUM, HIGH, SEVERE"
+      start_date:
+        type: "string"
+        format: "dd-mm-yyyy"
+      end_date:
+        type: "string"
+        format: "dd-mm-yyyy"
